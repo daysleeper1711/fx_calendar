@@ -179,7 +179,7 @@ def eventsInWeek(week, year):
             s_id = 'daily-cal' + str(i)
             if i != 0:
                 dateInput += timedelta(days=1) # move to next date to get the date string
-            label = str(dateInput.isocalendar()[2]) + dateInput.strftime('.%m.%d')
+            label = dateInput.strftime('.%m.%d')
             data[label] = getDataFromTableID(response,s_id)
         return data
     except Exception as inst:
@@ -216,7 +216,7 @@ def eventsInYear(year):
                 if i != 0:
                     dateInput += timedelta(days=1) # move to next date to get the date string
                 fetchingDate = dateInput.strftime('%a, %b %d')
-                label = str(dateInput.isocalendar()[1]) + dateInput.strftime('.%m.%d')
+                label = dateInput.strftime('%m.%d')
                 print()
                 print(f'Info: Start to fetching data on {fetchingDate}')
                 data[label] = getDataFromTableID(response,s_id)

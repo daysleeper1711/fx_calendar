@@ -4,20 +4,18 @@
     Input the date and get the list of events in that date
     Input the week (week of the year) and year to get the events in the week
     Input the year to get all events in the year
-    Event contains the time, name, importance level, actual, forecast, previous
+    Event contains the time, country, name, importance level, actual, forecast, previous
 """
-
 # standard library
 import time
 from datetime import datetime, timedelta
-import json
 
 # need installation
 import requests 
 from bs4 import BeautifulSoup 
 
+
 WEEK_QUERY_FORMAT = '%Y/%m%d'
-DAY_LABEL_FORMAT = '%Y.%m.%d' # yyyy.mm.dd
 
 # add to object
 def addValueEvent(eventTime,country, eventName ,eventImportance, eventActual, eventForecast, eventPrevious):
@@ -62,7 +60,6 @@ def sendRequest(dateInput):
             print('Info: Err for request page')
         else:
             print('Info: Success request page')
-        print()
         # using html5lib for html parser
         soup = BeautifulSoup(page.text,'html5lib')
         return soup
@@ -134,7 +131,7 @@ def getDataFromTableID(response, id):
 # feed data events on the date input
 def eventsInDay(dateInput):
     try:
-        data = {}
+        # data = {}
         response = sendRequest(dateInput)
         weekday = dateInput.isocalendar()[2]
         # get the id of table to get data    
@@ -143,8 +140,9 @@ def eventsInDay(dateInput):
         else:
             s_id = 'daily-cal' + str(weekday)
         print('Info: Processing on ', dateInput.strftime('%A %B %d,%Y'))
-        dayLabel = dateInput.strftime(DAY_LABEL_FORMAT)
-        data[dayLabel] = getDataFromTableID(response, s_id)
+        # dayLabel = str(weekday) + dateInput.strftime('.%m.%d')
+        # data[dayLabel] = getDataFromTableID(response, s_id)
+        data = getDataFromTableID(response, s_id)
         return data
     except Exception as inst:
         print(type(inst))    # the exception instance
@@ -157,7 +155,7 @@ def eventsInDay(dateInput):
 
 # validation year has how many weeks
 def weeksInYear(year):
-    return datetime(year,12,31).isocalendar()[1]
+    return datetime(year,12,28).isocalendar()[1]
 
 # feed data events whole week with the year and week input
 def eventsInWeek(week, year):
@@ -168,10 +166,6 @@ def eventsInWeek(week, year):
             return -1
         # create the object to contain data
         data = {}
-        day = {} # contain all the events in day
-        weekLabel = 'w' + str(week)
-        # data[weekLabel] = []
-        # find out the first sunday of the week which want to feed
         firstDateOfYear = datetime(year,1,1)
         weekdayFirstDateOfYear = firstDateOfYear.isocalendar()[2]
         if weekdayFirstDateOfYear != 7:
@@ -179,18 +173,14 @@ def eventsInWeek(week, year):
         else:
             startDate = firstDateOfYear
         # calculate the dateinput to feed data
-        dateInput = firstDateOfYear + timedelta(weeks=week)
+        dateInput = startDate + timedelta(weeks=week)
         response = sendRequest(dateInput)
         for i in range(7):
             s_id = 'daily-cal' + str(i)
             if i != 0:
                 dateInput += timedelta(days=1) # move to next date to get the date string
-            dayLabel = dateInput.strftime(DAY_LABEL_FORMAT)
-            # day[dayLabel] = []
-            # day[dayLabel].append(getDataFromTableID(response, s_id))
-            day[dayLabel] = getDataFromTableID(response,s_id)
-        # data[weekLabel].append(day)
-        data[weekLabel] = day
+            label = str(dateInput.isocalendar()[2]) + dateInput.strftime('.%m.%d')
+            data[label] = getDataFromTableID(response,s_id)
         return data
     except Exception as inst:
         print(type(inst))    # the exception instance
@@ -204,12 +194,36 @@ def eventsInWeek(week, year):
 # feed data events whole week of the date input
 def eventsInYear(year):
     try:
+        print(f'Info: Start to fetching data of in {year}')
         data = {}
-        print('Info: Processing year',year)
-        weeks = []
-        for i in range(weeksInYear(year)):
-            weeks.append(eventsInWeek(i + 1, year))
-        data[year] = weeks
+        # get the weekday of 1st date of the year
+        weekDay1st = datetime(year,1,1).isocalendar()[2]
+        # if not sunday startDate = datetime(year,1,1)
+        # otherwise return the last sunday in the week
+        if weekDay1st == 7:
+            startDate = datetime(year,1,1)
+        else:
+            startDate = datetime(year,1,1) - timedelta(days=weekDay1st)
+        totalWeeksInYear = weeksInYear(year)
+        # iteration all the weeks in year
+        for week in range(totalWeeksInYear):
+            # calc the dateInput to send request
+            dateInput = startDate + timedelta(weeks=week)
+            # send request and get response
+            response = sendRequest(dateInput)
+            for i in range(7):
+                s_id = 'daily-cal' + str(i)
+                if i != 0:
+                    dateInput += timedelta(days=1) # move to next date to get the date string
+                fetchingDate = dateInput.strftime('%a, %b %d')
+                label = str(dateInput.isocalendar()[1]) + dateInput.strftime('.%m.%d')
+                print()
+                print(f'Info: Start to fetching data on {fetchingDate}')
+                data[label] = getDataFromTableID(response,s_id)
+                print(f'Info: Finished fetching data on {fetchingDate}')
+                print()
+        print(f'Info: Finished fetching data in {year}')
+        print('----------------------------------------')
         return data
     except Exception as inst:
         print(type(inst))    # the exception instance
@@ -220,16 +234,4 @@ def eventsInYear(year):
         print('y =', y)
         return -1
 
-# to json format
-def toJson(data, read=False):
-    if read:
-        return json.dumps(data, indent=1)
-    return json.dumps(data)
-
 # ------------ TEST ------------------------------
-# d = datetime.today()
-# print(toJson(eventsInDay(d),True))
-# print(toJson(eventsInWeek(d.isocalendar()[1], d.isocalendar()[0]),True))
-# with open('events-2017.json', 'w') as f:
-    # json.dump(eventsInYear(2017),f)
-

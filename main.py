@@ -4,17 +4,6 @@ from feed import *
 
 import json
 
-# # firecloud storage configuration
-# import firebase_admin
-# from firebase_admin import credentials
-# from firebase_admin import firestore
-
-# cred = credentials.Certificate('apiKey.json')
-# firebase_admin.initialize_app(cred)
-# db = firestore.client()
-
-# events = db.collection('events')
-
 # check the directory is exist or not
 # if not create it
 def check(directory):
@@ -32,8 +21,7 @@ def fetch(year):
     data = {}
     for date in events:
         label = date
-        for event in events[date]:
-            data[label] = event
+        data[label] = events[date]
     fn = 'data/' + str(year) + '.json'
     with open(fn,'w') as f:
         json.dump(data,f, indent=1)

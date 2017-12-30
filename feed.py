@@ -131,7 +131,7 @@ def getDataFromTableID(response, id):
 # feed data events on the date input
 def eventsInDay(dateInput):
     try:
-        # data = {}
+        data = {}
         response = sendRequest(dateInput)
         weekday = dateInput.isocalendar()[2]
         # get the id of table to get data    
@@ -140,9 +140,8 @@ def eventsInDay(dateInput):
         else:
             s_id = 'daily-cal' + str(weekday)
         print('Info: Processing on ', dateInput.strftime('%A %B %d,%Y'))
-        # dayLabel = str(weekday) + dateInput.strftime('.%m.%d')
-        # data[dayLabel] = getDataFromTableID(response, s_id)
-        data = getDataFromTableID(response, s_id)
+        label = dateInput.strftime('.%m.%d')
+        data[label] = getDataFromTableID(response, s_id)
         return data
     except Exception as inst:
         print(type(inst))    # the exception instance
@@ -180,7 +179,8 @@ def eventsInWeek(week, year):
             if i != 0:
                 dateInput += timedelta(days=1) # move to next date to get the date string
             label = dateInput.strftime('.%m.%d')
-            data[label] = getDataFromTableID(response,s_id)
+            events = getDataFromTableID(response,s_id)
+            data[label] = events
         return data
     except Exception as inst:
         print(type(inst))    # the exception instance
@@ -219,7 +219,8 @@ def eventsInYear(year):
                 label = dateInput.strftime('%m.%d')
                 print()
                 print(f'Info: Start to fetching data on {fetchingDate}')
-                data[label] = getDataFromTableID(response,s_id)
+                events = getDataFromTableID(response,s_id)
+                data[label] = events
                 print(f'Info: Finished fetching data on {fetchingDate}')
                 print()
         print(f'Info: Finished fetching data in {year}')

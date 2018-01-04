@@ -71,8 +71,10 @@ def init():
         if lastDate.isocalendar()[1] != weeksInYear(int(lastDate.year)):
             for week in range(lastDate.isocalendar()[1],weeksInYear(int(lastDate.year)) + 1):
                 weekEvents = eventsInWeek(week,int(lastYear))
-                for date in weekEvents:
-                    lastYearData[date] = weekEvents[date]
+        else:
+            weekEvents = eventsInWeek(lastDate.isocalendar()[1],int(lastYear))
+        for date in weekEvents:
+            lastYearData[date] = weekEvents[date]
         with open(lastYearDataFile,'w') as f:
             json.dump(lastYearData,f)
         newData = eventsInYear(today.year)

@@ -209,6 +209,9 @@ def eventsInYear(year):
         for week in range(totalWeeksInYear):
             # calc the dateInput to send request
             dateInput = startDate + timedelta(weeks=week)
+            # add the stop request data
+            if dateInput > datetime.today():
+                break
             # send request and get response
             response = sendRequest(dateInput)
             for i in range(7):

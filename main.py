@@ -39,6 +39,7 @@ def init():
     # get the lastest year
     lastYear = max(fetchedYears)
     lastYearDataFile = 'data/' + lastYear + '.json'
+    # load the last year data
     with open(lastYearDataFile,'r') as f:
         lastYearData = json.load(f)
     # list months has stored in data
@@ -49,36 +50,55 @@ def init():
     for date in lastYearData:
         months.append(date.split('.')[0])
     lastMonth = max(months)
-    # get the lastest day in stored data
+    # get the lastest day of the lastest month in stored data
     for date in lastYearData:
         if date.split('.')[0] == lastMonth:
             days.append(date.split('.')[1])
     lastDay = max(days)
-    # get latest date object
-    lastDate = datetime(int(lastYear), int(lastMonth), int(lastDay))
-    # get today
+    # ----- UPDATE -----
+    # create latest date object
+    lastDateData = datetime(int(lastYear), int(lastMonth), int(lastDay))
+    # create today object
     today = datetime.today()
-    # get update
+    # get the year of last date in data
+    lastDateDataYear = lastDateData.year
+    # get the current year
+    currentYear = today.year
+    # get the week of last date in data 
+    lastDateDataWeek = lastDateData.isocalendar()[1]
+    # get the current week
+    currentWeek = today.isocalendar()[1]
+    # get last week in the year of last date data
+    lastWeekInLastDateDataYear = weeksInYear(lastDateDataYear)
     # check current year is the current year
-    if lastDate.year == today.year:
-        for week in range(lastDate.isocalendar()[1],today.isocalendar()[1] + 1):
-            weekEvents = eventsInWeek(week,int(lastYear))
+    if lastDateDataYear == currentYear:
+        # check the current week is the week of last date in data
+        if lastDateDataWeek == currentWeek:
+            return -1 # everythings were updated
+        # fetch all the data from last date data week to the current week
+        for week in range(lastDateDataWeek, currentWeek + 1):
+            weekEvents = eventsInWeek(week, lastDateDataYear)
             for date in weekEvents:
                 lastYearData[date] = weekEvents[date]
         with open(lastYearDataFile,'w') as f:
             json.dump(lastYearData,f)
-    elif lastDate.year != today.year:
-        if lastDate.isocalendar()[1] != weeksInYear(int(lastDate.year)):
-            for week in range(lastDate.isocalendar()[1],weeksInYear(int(lastDate.year)) + 1):
-                weekEvents = eventsInWeek(week,int(lastYear))
+    # check year of last date in data is not current year
+    elif lastDateDataYear != currentYear:
+        # check the week of last date in data is not the last week of the year
+        if lastDateDataWeek != lastWeekInLastDateYear:
+            # get data from the week of last date data to the end of the year
+            for week in range(lastDateDataWeek, lastWeekInLastDateDataYear + 1):
+                weekEvents = eventsInWeek(week, lastDateDataYear)
         else:
-            weekEvents = eventsInWeek(lastDate.isocalendar()[1],int(lastYear))
+            # get the last week of the year data
+            weekEvents = eventsInWeek(lastDateDataWeek, lastDateDataYear)
         for date in weekEvents:
             lastYearData[date] = weekEvents[date]
         with open(lastYearDataFile,'w') as f:
             json.dump(lastYearData,f)
-        newData = eventsInYear(today.year)
-        newFileName = 'data/' + str(today.year) + '.json'
+        # fetch the new data in new year
+        newData = eventsInYear(currentYear)
+        newFileName = 'data/' + str(currentYear) + '.json'
         with open(newFileName, 'w') as f:
             json.dump(newData,f)
 
@@ -86,7 +106,6 @@ def init():
 # -------------------TEST--------------------
 def test():
     fetchAll()
-
 
 if __name__ == "__main__":
     init()

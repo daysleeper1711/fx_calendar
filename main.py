@@ -11,10 +11,12 @@ def fetchAll():
     startYear = 2010
     print(f'Info: Start to fetching year from 2010 to {currentYear}')
     for year in range(2010,currentYear + 1):
-        fn = 'data' + str(year) + '.json'
+        fn = 'data/' + str(year) + '.json'
         data = eventsInYear(year)
+        print(f'Info: Process storing data in {year}')
         with open(fn,'w') as f:
             json.dump(data,f)
+        print(f'Info: Finished storing data in {year}')
     print('Info: Finish to fetch and storing data')
 
 # run every program start

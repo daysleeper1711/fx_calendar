@@ -86,18 +86,18 @@ def init():
             json.dump(lastYearData,f)
     # check year of last date in data is not current year
     elif lastDateDataYear != currentYear:
-        # # check the week of last date in data is not the last week of the year
-        # if lastDateDataWeek != lastWeekInLastDateDataYear:
-        #     # get data from the week of last date data to the end of the year
-        #     for week in range(lastDateDataWeek, lastWeekInLastDateDataYear + 1):
-        #         weekEvents = eventsInWeek(week, lastDateDataYear)
-        # else:
-        #     # get the last week of the year data
-        #     weekEvents = eventsInWeek(lastDateDataWeek, lastDateDataYear)
-        # for date in weekEvents:
-        #     lastYearData[date] = weekEvents[date]
-        # with open(lastYearDataFile,'w') as f:
-        #     json.dump(lastYearData,f)
+        # check the week of last date in data is not the last week of the year
+        if lastDateDataWeek != lastWeekInLastDateDataYear:
+            # get data from the week of last date data to the end of the year
+            for week in range(lastDateDataWeek, lastWeekInLastDateDataYear + 1):
+                weekEvents = eventsInWeek(week, lastDateDataYear)
+        else:
+            # get the last week of the year data
+            weekEvents = eventsInWeek(lastDateDataWeek, lastDateDataYear)
+        for date in weekEvents:
+            lastYearData[date] = weekEvents[date]
+        with open(lastYearDataFile,'w') as f:
+            json.dump(lastYearData,f)
         # # fetch the new data in new year
         # newData = eventsInYear(currentYear)
         # newFileName = 'data/' + str(currentYear) + '.json'

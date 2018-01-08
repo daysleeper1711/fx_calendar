@@ -14,8 +14,14 @@ from datetime import datetime, timedelta
 import requests 
 from bs4 import BeautifulSoup 
 
-
 WEEK_QUERY_FORMAT = '%Y/%m%d'
+
+# sorted the data by date (key)
+def sorted(data):
+    sortedData = {}
+    for key in sorted(data):
+        sortedData[key] = data[key]
+    return sortedData
 
 # add to object
 def addValueEvent(eventTime,country, eventName ,eventImportance, eventActual, eventForecast, eventPrevious):
@@ -181,7 +187,7 @@ def eventsInWeek(week, year):
             label = dateInput.strftime('.%m.%d')
             events = getDataFromTableID(response,s_id)
             data[label] = events
-        return data
+        return sorted(data)
     except Exception as inst:
         print(type(inst))    # the exception instance
         print(inst.args)     # arguments stored in .args
@@ -228,7 +234,7 @@ def eventsInYear(year):
                 print()
         print(f'Info: Finished fetching data in {year}')
         print('----------------------------------------')
-        return data
+        return sorted(data) # adding sorted data before save into storage
     except Exception as inst:
         print(type(inst))    # the exception instance
         print(inst.args)     # arguments stored in .args

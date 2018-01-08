@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup
 WEEK_QUERY_FORMAT = '%Y/%m%d'
 
 # sorted the data by date (key)
-def sorted(data):
+def sortedData(data):
     sortedData = {}
     for key in sorted(data):
         sortedData[key] = data[key]
@@ -184,10 +184,10 @@ def eventsInWeek(week, year):
             s_id = 'daily-cal' + str(i)
             if i != 0:
                 dateInput += timedelta(days=1) # move to next date to get the date string
-            label = dateInput.strftime('.%m.%d')
+            label = dateInput.strftime('%m.%d')
             events = getDataFromTableID(response,s_id)
             data[label] = events
-        return sorted(data)
+        return sortedData(data)
     except Exception as inst:
         print(type(inst))    # the exception instance
         print(inst.args)     # arguments stored in .args
@@ -234,7 +234,7 @@ def eventsInYear(year):
                 print()
         print(f'Info: Finished fetching data in {year}')
         print('----------------------------------------')
-        return sorted(data) # adding sorted data before save into storage
+        return sortedData(data) # adding sorted data before save into storage
     except Exception as inst:
         print(type(inst))    # the exception instance
         print(inst.args)     # arguments stored in .args

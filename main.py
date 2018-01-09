@@ -109,6 +109,7 @@ def init():
 
 
 # -------------------TEST--------------------
+# this function used to test the function under
 def test():
     fetchAll()
 

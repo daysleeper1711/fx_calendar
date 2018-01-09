@@ -74,14 +74,12 @@ def init():
     lastWeekInLastDateDataYear = weeksInYear(lastDateDataYear)
     # check current year is the current year
     if lastDateDataYear == currentYear:
-        # check the current week is the week of last date in data
-        if lastDateDataWeek == currentWeek:
-            return -1 # everythings were updated
         # fetch all the data from last date data week to the current week
         for week in range(lastDateDataWeek, currentWeek + 1):
             weekEvents = eventsInWeek(week, lastDateDataYear)
             for date in weekEvents:
                 lastYearData[date] = weekEvents[date]
+        # store data in file
         with open(lastYearDataFile,'w') as f:
             json.dump(lastYearData,f)
     # check year of last date in data is not current year

@@ -7,10 +7,10 @@ import json
 # clear screen function
 def clear():
     # sleep for 1 sec before clean screen
-    time.sleep(0.5)
-    print('\033[1J')
-    # move cursor to the left corner
-    print('\033[H')
+    time.sleep(0.3)
+    print('\033[2A') # move cursor up to the begining of the line
+    print('\033[2K') # clear entire line
+    print('\033[2A') # move cursor to the first position
 
 # first fetch all data in first run
 def fetchAll():

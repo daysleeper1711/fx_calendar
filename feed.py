@@ -16,6 +16,14 @@ from bs4 import BeautifulSoup
 
 WEEK_QUERY_FORMAT = '%Y/%m%d'
 
+# clear screen function
+def clear():
+    # sleep for 1 sec before clean screen
+    time.sleep(0.5)
+    print('\033[1J')
+    # move cursor to the left corner
+    print('\033[H')
+
 # sorted the data by date (key)
 def sortedData(data):
     sortedData = {}
@@ -59,6 +67,7 @@ def sendRequest(dateInput):
     try:
         feedURL = getURL(dateInput)
         print('Info: Getting data from', feedURL)
+        clear()
         # making the request
         page = requests.get(feedURL)
         # checking that the request is success or not
@@ -66,6 +75,7 @@ def sendRequest(dateInput):
             print('Info: Err for request page')
         else:
             print('Info: Success request page')
+        clear()
         # using html5lib for html parser
         soup = BeautifulSoup(page.text,'html5lib')
         return soup
@@ -146,6 +156,7 @@ def eventsInDay(dateInput):
         else:
             s_id = 'daily-cal' + str(weekday)
         print('Info: Processing on ', dateInput.strftime('%A %B %d,%Y'))
+        clear()
         label = dateInput.strftime('.%m.%d')
         data[label] = getDataFromTableID(response, s_id)
         return data
@@ -166,6 +177,7 @@ def weeksInYear(year):
 def eventsInWeek(week, year):
     try:
         print(f'Info: Processing week {week} in {year}')
+        clear()
         # validation the maxium week can enter
         if week > weeksInYear(year):
             return -1
@@ -201,6 +213,7 @@ def eventsInWeek(week, year):
 def eventsInYear(year):
     try:
         print(f'Info: Start to fetching data of in {year}')
+        clear()
         data = {}
         # get the weekday of 1st date of the year
         weekDay1st = datetime(year,1,1).isocalendar()[2]
@@ -226,14 +239,14 @@ def eventsInYear(year):
                     dateInput += timedelta(days=1) # move to next date to get the date string
                 fetchingDate = dateInput.strftime('%a, %b %d')
                 label = dateInput.strftime('%m.%d')
-                print()
                 print(f'Info: Start to fetching data on {fetchingDate}')
+                clear()
                 events = getDataFromTableID(response,s_id)
                 data[label] = events
                 print(f'Info: Finished fetching data on {fetchingDate}')
-                print()
+                clear()
         print(f'Info: Finished fetching data in {year}')
-        print('----------------------------------------')
+        clear()
         return sortedData(data) # adding sorted data before save into storage
     except Exception as inst:
         print(type(inst))    # the exception instance
